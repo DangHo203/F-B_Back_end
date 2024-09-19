@@ -1,8 +1,8 @@
 import userRouter from "./user";
-
-const initRoutes = (app : any) => {
+import staffRouter from "./staff";
+const initRoutes = (app: any) => {
     app.use("/api/user", userRouter);
- 
+    app.use("/api/staff", staffRouter);
 };
 
 module.exports = initRoutes;

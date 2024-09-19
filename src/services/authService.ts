@@ -14,7 +14,7 @@ export const loginUser = async (
     email: string,
     password: string
 ): Promise<{ user: User; token: string; refreshToken: string }> => {
-    const sql = `SELECT * FROM User WHERE email = ?`;
+    const sql = `SELECT * FROM Users WHERE email = ?`;
 
     return new Promise((resolve, reject) => {
         db.query(sql, [email], async function (err: any, data: any) {
@@ -34,7 +34,7 @@ export const loginUser = async (
                 });
             }
 
-            if (data[0].role !== "admin" || data[0].status === "banned") {
+            if (data[0].role === "user" || data[0].status === "banned") {
                 return reject({
                     status: 402,
                     message: "You are not allowed to login",
@@ -44,7 +44,7 @@ export const loginUser = async (
             const token = generateToken(data[0]?._id, data[0]?.role);
             const refreshToken = generateRefreshToken(data[0]?._id);
 
-            const updateRefreshTokenSql = `UPDATE User SET refreshToken = ? WHERE _id = ?`;
+            const updateRefreshTokenSql = `UPDATE Users SET refreshToken = ? WHERE _id = ?`;
             db.query(
                 updateRefreshTokenSql,
                 [refreshToken, data[0]._id],
@@ -62,18 +62,17 @@ export const registerUser = async (data: {
     name: string;
     email: string;
     password: string;
-    address: string;
-    phoneNumber: string;
-    gen: boolean;
-    birth: string;
+    phone: string;
+    username: string;
+    role: string;
 }): Promise<{ message: string; data: any }> => {
-    const { name, email, password, address, phoneNumber, gen, birth } = data;
+    const { name, email, password, phone, role, username } = data;
     //hash password
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password.toString(), salt);
 
     return new Promise(async (resolve, reject) => {
-        const emailQuery = "SELECT * FROM User WHERE email = ?";
+        const emailQuery = "SELECT * FROM Users WHERE email = ?";
         const emailResult: [] = await new Promise((resolve, reject) => {
             db.query(emailQuery, [email], (err: any, data: any) => {
                 if (err) return reject(err);
@@ -89,9 +88,9 @@ export const registerUser = async (data: {
         }
 
         // Check if phone number exists
-        const phoneQuery = "SELECT * FROM User WHERE phoneNumber = ?";
+        const phoneQuery = "SELECT * FROM Users WHERE phone = ?";
         const phoneResult: [] = await new Promise((resolve, reject) => {
-            db.query(phoneQuery, [phoneNumber], (err: any, data: any) => {
+            db.query(phoneQuery, [phone], (err: any, data: any) => {
                 if (err) return reject(err);
                 resolve(data);
             });
@@ -104,21 +103,12 @@ export const registerUser = async (data: {
             });
         }
 
-        let sql = `INSERT INTO User (name, phoneNumber, email, address,gender, birth, password, role) 
-Values (?,? ,?, ?, ?, ?, ?, ?)`;
+        let sql = `INSERT INTO Users (fullName, phone, email, username, password, role) 
+Values (?,? ,?, ?, ?, ?)`;
 
         db.query(
             sql,
-            [
-                name,
-                phoneNumber,
-                email,
-                address,
-                gen,
-                birth,
-                passwordHash,
-                "admin",
-            ],
+            [name, phone, email, username, passwordHash, role],
             function (err: any, data: any) {
                 if (err) reject(err);
                 resolve({ data: data, message: "Register successfully" });
@@ -134,8 +124,8 @@ export const changePasswordService = async (data: {
 }): Promise<{ message: string; data: any }> => {
     const { email, oldPassword, newPassword } = data;
 
-    const sql1 = `SELECT * FROM User WHERE email = ?`;
-    const sql2 = `UPDATE User SET password = ? WHERE email = ?`;
+    const sql1 = `SELECT * FROM Users WHERE email = ?`;
+    const sql2 = `UPDATE Users SET password = ? WHERE email = ?`;
 
     return new Promise(async (resolve, reject) => {
         const user: any = await new Promise((resolve, reject) => {

@@ -5,16 +5,18 @@ const {
     DeleteUser,
     UpdateUser,
     GetUserById,
-    Login,
-    Register,
     CheckPhoneNumber,
-
     GetUsersByParams,
-    createNewAccessToken,
     updateStatus,
     GetSumUser,
-    changePassword
 } = require("../controllers/user");
+const {
+    Login,
+    Register,
+    createNewAccessToken,
+    changePassword,
+} = require("../controllers/auth");
+
 const router = Router();
 const { isAdmin } = require("../middlewares/isAdmin");
 const { verifyToken } = require("../middlewares/verifyToken");

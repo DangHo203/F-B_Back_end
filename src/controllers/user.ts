@@ -2,133 +2,6 @@ import db from "../dbConfig";
 import { Request, Response } from "express";
 const jwt = require("jsonwebtoken");
 
-//services
-import {
-    loginUser,
-    registerUser,
-    changePasswordService,
-} from "../services/authService";
-
-const Login = async (req: Request, res: Response) => {
-    let { email, password } = req.query;
-    if (!email || !password) {
-        return res
-            .status(400)
-            .json({ status: 400, message: "Missing required fields" });
-    }
-
-    try {
-        const { user, token, refreshToken } = await loginUser(
-            email as string,
-            password as string
-        );
-        return res.status(200).json({
-            status: 200,
-            message: "Login successfully",
-            data: {
-                user,
-                token,
-                refreshToken,
-            },
-        });
-    } catch (err: any) {
-        res.status(err.status || 500).json({
-            status: err.status || 500,
-            message: err.message || "Server error",
-        });
-    }
-};
-
-const Register = async (req: Request, res: Response) => {
-    let { email, password, name, phoneNumber, address, gender, birth } =
-        req.query;
-
-    if (!email || !password || !name || !phoneNumber || !address || !birth) {
-        return res.status(403).json({ message: "Missing required fields" });
-    }
-    const gen = gender === "true" ? true : false;
-
-    try {
-        const data = await registerUser({
-            email: email as string,
-            password: password as string,
-            name: name as string,
-            phoneNumber: phoneNumber as string,
-            address: address as string,
-            gen: gen,
-            birth: birth as string,
-        });
-        return res.status(200).json({
-            data: data,
-        });
-    } catch (err: any) {
-        res.status(err.status || 500).json({
-            status: err.status || 500,
-            message: err.message || "Server error",
-        });
-    }
-};
-
-const changePassword = async (req: Request, res: Response) => {
-    const { email, oldPassword, newPassword } = req.query;
-    if (!email || !oldPassword || !newPassword) {
-        return res.status(400).json({ message: "Missing required fields" });
-    }
-
-    try {
-        const data = await changePasswordService({
-            email: email as string,
-            oldPassword: oldPassword as string,
-            newPassword: newPassword as string,
-        });
-        return res.status(200).json({
-            status: 200,
-            data: data,
-            message: "Change password successfully",
-        });
-    } catch (err: any) {
-        res.status(err.status || 500).json({
-            status: err.status || 500,
-            message: err.message || "Server error",
-        });
-    }
-};
-
-const createNewAccessToken = async (req: Request, res: Response) => {
-    const { _id } = req.query;
-    if (!_id) {
-        return res.status(400).json({ message: "ID is require!" });
-    }
-    let sql = `SELECT refreshToken FROM User WHERE _id = ${_id}`;
-    db.query(sql, function (err: any, data: any) {
-        if (err) throw err;
-        const refreshToken = data[0].refreshToken;
-        if (!refreshToken) {
-            return res
-                .status(400)
-                .json({ message: "Refresh token is require!" });
-        }
-        jwt.verify(
-            refreshToken,
-            process.env.JWT_SECRET,
-            (err: any, user: any) => {
-                if (err) {
-                    return res.status(403).json({
-                        status: 403,
-                        message: "RefreshToken has expired",
-                    });
-                }
-                const accessToken = jwt.sign(
-                    { email: user.email, _id: user._id },
-                    process.env.JWT_SECRET,
-                    { expiresIn: "1h" }
-                );
-                return res.status(200).json({ accessToken });
-            }
-        );
-    });
-};
-
 const GetUsers = async (req: Request, res: Response) => {
     let sql = "SELECT * FROM User";
     db.query(sql, function (err: any, data: any) {
@@ -315,7 +188,7 @@ const GetUsersByParams = async (req: Request, res: Response) => {
         ? req.query.page[0]
         : req.query.page;
     const skip = page ? (parseInt(page as string) - 1) * 10 : 0;
-    
+
     const query = `SELECT * FROM User ${
         Object.keys(queryObj).length === 0 ? "" : "WHERE"
     } ${Object.keys(queryObj)
@@ -369,18 +242,192 @@ const updateStatus = async (req: Request, res: Response) => {
     }
 };
 
+//////////////////STAFF///////////////////////
+const checkValid = (email: string, phone: string) => {
+    const query = `SELECT * FROM Users WHERE email = ${email}`;
+    db.query(query, function (err: any, data: any) {
+        if (err) throw err;
+        if (data.length > 0) {
+            return 410;
+        }
+    });
+    const query2 = `SELECT * FROM Users WHERE phone = ${phone}`;
+    db.query(query2, function (err: any, data: any) {
+        if (err) throw err;
+        if (data.length > 0) {
+            return 411;
+        }
+    });
+    return 200;
+};
+
+const AddStaff = async (req: Request, res: Response) => {
+    const { name, phone, email, username, role } = req.query;
+    if (!name || !phone || !email || !username || !role) {
+        return res.status(400).json({ message: "Missing required fields" });
+    }
+    const query = `INSERT INTO Users (fullName, phone, email, username, role) VALUES ("${name}","${phone}","${email}","${username}","${role}")`;
+    if (checkValid(email as string, phone as string) === 410) {
+        return res.status(410).json({ message: "Email is already exist" });
+    } else if (checkValid(email as string, phone as string) === 411) {
+        return res
+            .status(411)
+            .json({ message: "Phone number is already exist" });
+    }
+    try {
+        db.query(query, function (err: any, data: any) {
+            if (err) throw err;
+            res.status(200).json({
+                message: "Add staff successfully",
+                data: data,
+            });
+        });
+    } catch (err) {
+        return res.status(500).json({ message: "Server error" });
+    }
+};
+const UpdateStaff = async (req: Request, res: Response) => {
+    const { user_id, name, phone, email, username, role } = req.query;
+    if (!user_id) {
+        return res.status(400).json({ message: "ID is require!" });
+    }
+
+    let sql = `UPDATE Users SET fullName = "${name}", phone = "${phone}", email = "${email}", username = "${username}", role = "${role}" WHERE user_id = ${user_id}`;
+    if (checkValid(email as string, phone as string) === 410) {
+        return res.status(410).json({ message: "Email is already exist" });
+    } else if (checkValid(email as string, phone as string) === 411) {
+        return res
+            .status(411)
+            .json({ message: "Phone number is already exist" });
+    }
+
+    try {
+        db.query(sql, function (err: any, data: any) {
+            if (err) throw err;
+            res.status(200).json({
+                status: 200,
+                message: "Update staff successfully",
+                data: data,
+            });
+        });
+    } catch (err) {
+        return res.status(500).json({ message: "Server error" });
+    }
+};
+const DeleteStaff = async (req: Request, res: Response) => {
+    const { user_id } = req.query;
+    if (!user_id) {
+        return res.status(400).json({ message: "ID is require!" });
+    }
+
+    let sql = `DELETE FROM Users WHERE user_id = ${user_id}`;
+
+    try {
+        db.query(sql, function (err: any, data: any) {
+            if (err) throw err;
+            res.status(200).json({
+                message: "Delete staff successfully",
+                data: data,
+            });
+        });
+    } catch (err) {
+        return res.status(500).json({ message: "Server error" });
+    }
+};
+
+const GetSumStaff = async (req: Request, res: Response) => {
+    const queryObj = { ...req.query };
+    const excludedFields = ["page", "sort", "limit", "fields"];
+    excludedFields.forEach((el) => delete queryObj[el]);
+
+    const query = `SELECT Count(*) as Sum FROM Users ${
+        Object.keys(queryObj).length === 0 ? "" : "WHERE"
+    } ${Object.keys(queryObj)
+        .map((key) => {
+            if (key === "status") {
+                return `status like '${queryObj[key]}'`;
+            } else if (key === "role") {
+                return `role like '${queryObj[key]}'`;
+            } else if (queryObj[key] !== "") {
+                return `(user_id like '%${queryObj[key]}%' or fullName like '%${queryObj[key]}%' or phone like '%${queryObj[key]}%' )`;
+            }
+        })
+        .join(" AND ")} ${
+        Object.keys(queryObj).length === 0
+            ? "WHERE role not like 'user'"
+            : "and role not like 'user'"
+    } LIMIT 100000 OFFSET 0`;
+    console.log(query);
+    try {
+        db.query(query, function (err: any, data: any) {
+            if (err) throw err;
+            res.status(200).json({
+                message: "Get len by params successfully",
+                length: data,
+            });
+        });
+    } catch (err) {
+        return res.status(500).json({ message: "Server error" });
+    }
+};
+
+const GetStaffsByParams = async (req: Request, res: Response) => {
+    const queryObj = { ...req.query };
+
+    const excludedFields = ["page", "sort", "limit", "fields"];
+    excludedFields.forEach((el) => delete queryObj[el]);
+
+    const page = Array.isArray(req.query.page)
+        ? req.query.page[0]
+        : req.query.page;
+    const skip = page ? (parseInt(page as string) - 1) * 5 : 0;
+
+    const query = `SELECT * FROM Users ${
+        Object.keys(queryObj).length === 0 ? "" : "WHERE"
+    } ${Object.keys(queryObj)
+        .map((key) => {
+            if (key === "status") {
+                return `status like '${queryObj[key]}'`;
+            } else if (key === "role") {
+                return `role like '${queryObj[key]}'`;
+            } else if (queryObj[key] !== "") {
+                return `(user_id like '%${queryObj[key]}%' or fullName like '%${queryObj[key]}%' or phone like '%${queryObj[key]}%' )`;
+            }
+        })
+        .join(" and ")} ${
+        Object.keys(queryObj).length === 0
+            ? "WHERE role not like 'user'"
+            : "and role not like 'user'"
+    }  LIMIT 5 OFFSET ${skip}`;
+    console.log(query);
+    try {
+        db.query(query, function (err: any, data: any) {
+            if (err) throw err;
+            res.status(200).json({
+                message: "Get users by params successfully",
+                data,
+                length: data.length,
+            });
+        });
+    } catch (err) {
+        return res.status(500).json({ message: "Server error" });
+    }
+};
+
 export = {
     AddUser,
     GetUsers,
     DeleteUser,
     UpdateUser,
     GetUserById,
-    Login,
-    Register,
-    CheckPhoneNumber,   
+    CheckPhoneNumber,
     GetSumUser,
     GetUsersByParams,
-    createNewAccessToken,
     updateStatus,
-    changePassword
+
+    AddStaff,
+    UpdateStaff,
+    DeleteStaff,
+    GetSumStaff,
+    GetStaffsByParams,
 };
