@@ -1,4 +1,4 @@
-import db from "../dbConfig";
+import db from "../../config/database.config";
 
 interface Filter {
     queryObj: any;

@@ -1,4 +1,4 @@
-import db from "../dbConfig";
+import db from "../../config/database.config";
 import bcrypt from "bcrypt";
 
 interface User {
@@ -9,7 +9,7 @@ interface User {
     refreshToken: string;
 }
 
-import { generateToken, generateRefreshToken } from "../middlewares/jwt";
+import { generateToken, generateRefreshToken } from "../../middlewares/jwt";
 export const loginUser = async (
     email: string,
     password: string
@@ -34,14 +34,14 @@ export const loginUser = async (
                 });
             }
 
-            if (data[0].role === "user" || data[0].status === "banned") {
+            if (data[0].role === "user" || data[0].status !== "active") {
                 return reject({
                     status: 402,
                     message: "You are not allowed to login",
                 });
             }
 
-            const token = generateToken(data[0]?._id, data[0]?.role);
+            const token = generateToken(data[0]?._id, data[0]?.role, data[0]?.status);
             const refreshToken = generateRefreshToken(data[0]?._id);
 
             const updateRefreshTokenSql = `UPDATE Users SET refreshToken = ? WHERE _id = ?`;

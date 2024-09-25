@@ -1,7 +1,8 @@
 import express from "express";
 const app = express();
 const port = 5000;
-const initRoutes = require("./routes");
+// const initRoutes = require("./route");
+const initRoutes = require("./route.ts");
 app.use(express.json());
 require("dotenv").config();
 const cors = require("cors");

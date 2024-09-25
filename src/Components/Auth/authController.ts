@@ -1,4 +1,4 @@
-import db from "../dbConfig";
+import db from "../../config/database.config";
 import { Request, Response } from "express";
 const jwt = require("jsonwebtoken");
 
@@ -7,7 +7,7 @@ import {
     loginUser,
     registerUser,
     changePasswordService,
-} from "../services/authService";
+} from "./authService";
 
 const Login = async (req: Request, res: Response) => {
     let { email, password } = req.query;
