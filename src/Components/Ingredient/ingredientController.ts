@@ -21,10 +21,11 @@ const GetIngredientByParams = async (req: Request, res: Response) => {
     try {
         const result = await GetIngredientByParamsService({
             search: search as string,
-            is_available: Boolean(is_available),
+            is_available: is_available as string,
             page: Number(page),
             limit: Number(limit),
         });
+        console.log(result);
         return res
             .status(200)
             .json({ message: "Ingredients fetched successfully", result });
@@ -34,10 +35,11 @@ const GetIngredientByParams = async (req: Request, res: Response) => {
 };
 const GetSumIngredientByParams = async (req: Request, res: Response) => {
     const { search, is_available } = req.query;
+    console.log(search, is_available);
     try {
         const result = await GetSumIngredientByParamsService({
             search: search as string,
-            is_available: Boolean(is_available),
+            is_available: is_available as string,
         });
         return res
             .status(200)
@@ -62,7 +64,8 @@ const GetIngredientById = async (req: Request, res: Response) => {
 };
 
 const AddIngredient = async (req: Request, res: Response) => {
-    const { name, stock, is_available } = req.query;
+    const { name, stock, is_available, unit } = req.query;
+    console.log(name, stock, is_available, unit);
     if (!name || !stock || !is_available) {
         return res.status(400).json({ message: "All fields are required" });
     }
@@ -71,6 +74,7 @@ const AddIngredient = async (req: Request, res: Response) => {
             name: name as string,
             stock: Number(stock),
             is_available: Boolean(is_available),
+            unit: unit as string,
         });
         return res
             .status(201)

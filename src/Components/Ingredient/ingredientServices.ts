@@ -4,6 +4,7 @@ const AddIngredientService = (ingredient: {
     name: string;
     stock: number;
     is_available: boolean;
+    unit: string;
 }) => {
     const query = `INSERT INTO ingredients SET ?`;
 
@@ -45,7 +46,7 @@ const GetIngredientByIdService = (i_id: number) => {
 };
 const GetIngredientByParamsService = (params: {
     search: string;
-    is_available: boolean;
+    is_available: string;
     page: number;
     limit: number;
 }) => {
@@ -68,13 +69,14 @@ const GetIngredientByParamsService = (params: {
         }
         if (is_available !== undefined) {
             conditions.push(`is_available = ?`);
-            queryParams.push(is_available);
+            queryParams.push(is_available ==="true" ? 1 : 0);
         }
 
         query += ` WHERE ` + conditions.join(" AND ");
     }
     query += ` LIMIT ? OFFSET ?`;
     queryParams.push(limit, numberPage);
+    console.log(query);
 
     return new Promise((resolve, reject) => {
         db.query(query, queryParams, (err, result) => {
@@ -88,7 +90,7 @@ const GetIngredientByParamsService = (params: {
 };
 const GetSumIngredientByParamsService = (params: {
     search: string;
-    is_available: boolean;
+    is_available: string;
 }) => {
     const { search, is_available } = params;
     // const query = `SELECT COUNT(*) as total FROM ingredients ${
@@ -96,7 +98,8 @@ const GetSumIngredientByParamsService = (params: {
     // } ${search ? `(ingredient_id = ${search} And name = ${search}) and ` : " "}   ${
     //     is_available ? `is_available = ${is_available} ` : " "
     // } `;
-    let query = `SELECT * FROM ingredients`;
+    console.log(search, is_available);
+    let query = `SELECT Count(*) as Sum FROM ingredients`;
     let queryParams = [];
 
     if (search || is_available !== undefined) {
@@ -106,15 +109,15 @@ const GetSumIngredientByParamsService = (params: {
             conditions.push(`ingredient_id = ? OR name LIKE ?`);
             queryParams.push(search, `%${search}%`);
         }
-        if (is_available !== undefined) {
+        if (is_available) {
             conditions.push(`is_available = ?`);
-            queryParams.push(is_available);
+            queryParams.push(is_available ==="true" ? 1 : 0);
         }
 
         query += ` WHERE ` + conditions.join(" AND ");
     }
     query += ` LIMIT 10000 OFFSET 0`;
-
+    console.log(query);
     return new Promise((resolve, reject) => {
         db.query(query, queryParams, (err, result) => {
             if (err) {
