@@ -30,7 +30,7 @@ const RemoveIngredientFromMenuService = (ingredient: {
                 resolve(result);
             }
         });
-    })
+    });
 };
 
 const UpdateIngredientFromMenuService = (ingredient: {
@@ -39,20 +39,25 @@ const UpdateIngredientFromMenuService = (ingredient: {
 }) => {
     const query = `UPDATE menuitemingredients SET quantity_required = ? WHERE menu_item_ingredient_id = ?`;
     return new Promise((resolve, reject) => {
-        db.query(query, [ingredient.quantity_required, ingredient.menu_item_ingredient_id], (err, result) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(result);
+        db.query(
+            query,
+            [ingredient.quantity_required, ingredient.menu_item_ingredient_id],
+            (err, result) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result);
+                }
             }
-        });
+        );
     });
 };
 
-const GetIngredientFromMenuService = (ingredient: {
-    item_id: number;
-}) => {
-    const query = `SELECT * FROM menuitemingredients WHERE item_id = ?`;
+const GetIngredientFromMenuService = (ingredient: { item_id: number }) => {
+    const query = `SELECT menuitemingredients.ingredient_id,menuitemingredients.item_id, menuitemingredients.quantity_required, ingredients.name  FROM menuitemingredients join ingredients on menuitemingredients.ingredient_id = ingredients.ingredient_id WHERE menuitemingredients.item_id = ?
+
+`;
+    console.log(query);
     return new Promise((resolve, reject) => {
         db.query(query, ingredient.item_id, (err, result) => {
             if (err) {
@@ -63,10 +68,23 @@ const GetIngredientFromMenuService = (ingredient: {
         });
     });
 };
+const DeleteAllIngredientsFromMenuService = (ingredient: { item_id: number }) => {
+    const query = `DELETE FROM menuitemingredients WHERE item_id = ?`;
+    return new Promise((resolve, reject) => {
+        db.query(query, ingredient.item_id, (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(result);
+            }
+        });
+    });
+}
 
 export {
     AddIngredientToMenuService,
     RemoveIngredientFromMenuService,
     UpdateIngredientFromMenuService,
     GetIngredientFromMenuService,
+    DeleteAllIngredientsFromMenuService
 };

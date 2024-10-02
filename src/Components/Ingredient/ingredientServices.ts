@@ -1,5 +1,16 @@
 import db from "../../config/database.config";
-
+const GetIngredientService = () => {
+    const query = `SELECT * FROM ingredients`;
+    return new Promise((resolve, reject) => {
+        db.query(query, (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(result);
+            }
+        });
+    });
+}
 const AddIngredientService = (ingredient: {
     name: string;
     stock: number;
@@ -69,7 +80,7 @@ const GetIngredientByParamsService = (params: {
         }
         if (is_available !== undefined) {
             conditions.push(`is_available = ?`);
-            queryParams.push(is_available ==="true" ? 1 : 0);
+            queryParams.push(is_available === "true" ? 1 : 0);
         }
 
         query += ` WHERE ` + conditions.join(" AND ");
@@ -111,7 +122,7 @@ const GetSumIngredientByParamsService = (params: {
         }
         if (is_available) {
             conditions.push(`is_available = ?`);
-            queryParams.push(is_available ==="true" ? 1 : 0);
+            queryParams.push(is_available === "true" ? 1 : 0);
         }
 
         query += ` WHERE ` + conditions.join(" AND ");
@@ -129,10 +140,32 @@ const GetSumIngredientByParamsService = (params: {
     });
 };
 
+const UpdateIngredientService = (ingredient: {
+    name: string;
+    stock: number;
+    is_available: boolean;
+    unit: string;
+    ingredient_id: number;
+}) => {
+    const { name, stock, is_available, unit } = ingredient;
+    const query = `UPDATE ingredients SET name ="${name}",stock=${stock},is_available = ${is_available},unit = "${unit}"  WHERE ingredient_id = "${ingredient.ingredient_id}"`;
+    return new Promise((resolve, reject) => {
+        db.query(query, (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(result);
+            }
+        });
+    });
+};
+
 export {
+    GetIngredientService,
     AddIngredientService,
     GetIngredientByIdService,
     GetIngredientByParamsService,
     GetSumIngredientByParamsService,
     DeleteIngredientService,
+    UpdateIngredientService,
 };

@@ -1,11 +1,13 @@
 import { Request, Response } from "express";
 
 import {
+    GetIngredientService,
     AddIngredientService,
     DeleteIngredientService,
     GetIngredientByIdService,
     GetIngredientByParamsService,
     GetSumIngredientByParamsService,
+    UpdateIngredientService,
 } from "./ingredientServices";
 
 import {
@@ -13,7 +15,19 @@ import {
     RemoveIngredientFromMenuService,
     UpdateIngredientFromMenuService,
     GetIngredientFromMenuService,
+    DeleteAllIngredientsFromMenuService,
 } from "./listIngredientServices";
+
+const GetIngredient = async (req: Request, res: Response) => {
+    try {
+        const result = await GetIngredientService();
+        return res
+            .status(200)
+            .json({ message: "Ingredients fetched successfully", result });
+    } catch (err) {
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
 
 const GetIngredientByParams = async (req: Request, res: Response) => {
     const { search, is_available, page, limit } = req.query;
@@ -100,6 +114,28 @@ const DeleteIngredient = async (req: Request, res: Response) => {
     }
 };
 
+const UpdateIngredient = async (req: Request, res: Response) => {
+    const { i_id, name, stock, is_available, unit } = req.query;
+    if (!i_id || !name || !stock || !is_available) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
+    try {
+        const result = await UpdateIngredientService({
+            ingredient_id: Number(i_id),
+            name: name as string,
+            stock: Number(stock),
+            is_available: Boolean(is_available),
+            unit: unit as string,
+        });
+        return res
+            .status(200)
+            .json({ message: "Ingredient updated successfully", result });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
 //List Ingredient
 const AddIngredientToMenu = async (req: Request, res: Response) => {
     const { item_id, ingredient_id, quantity_required } = req.query;
@@ -181,15 +217,35 @@ const GetIngredientsFromMenu = async (req: Request, res: Response) => {
         return res.status(500).json({ message: "Internal server error" });
     }
 };
+const DeleteAllIngredientsFromMenu = async (req: Request, res: Response) => {
+    const { item_id } = req.query;
+    if (!item_id) {
+        return res.status(400).json({ message: "Item id is required" });
+    }
+    try {
+        const result = await DeleteAllIngredientsFromMenuService({
+            item_id: Number(item_id),
+        });
+
+        return res
+            .status(200)
+            .json({ message: "Ingredients deleted all successfully", result });
+    } catch (err) {
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
 
 export {
+    GetIngredient,
     GetIngredientByParams,
     GetIngredientById,
     AddIngredient,
     DeleteIngredient,
+    UpdateIngredient,
     GetSumIngredientByParams,
     AddIngredientToMenu,
     RemoveIngredientFromMenu,
     UpdateIngredientFromMenu,
     GetIngredientsFromMenu,
+    DeleteAllIngredientsFromMenu
 };

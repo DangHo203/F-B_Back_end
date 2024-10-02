@@ -22,6 +22,7 @@ const GetNutrition = async (req: Request, res: Response) => {
 };
 const AddNutrition = async (req: Request, res: Response) => {
     const { item_id, calories, carbs, proteins, fats } = req.query;
+    console.log(item_id, calories, carbs, proteins, fats);
     if (!item_id || !calories || !carbs || !proteins || !fats) {
         return res.status(400).json({ message: "All fields are required" });
     }
