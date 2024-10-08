@@ -8,7 +8,7 @@ import {
     GetIngredientByParamsService,
     GetSumIngredientByParamsService,
     UpdateIngredientService,
-} from "./ingredientServices";
+} from "./ingredient.service";
 
 import {
     AddIngredientToMenuService,
@@ -16,7 +16,7 @@ import {
     UpdateIngredientFromMenuService,
     GetIngredientFromMenuService,
     DeleteAllIngredientsFromMenuService,
-} from "./listIngredientServices";
+} from "./listIngredient.service";
 
 const GetIngredient = async (req: Request, res: Response) => {
     try {

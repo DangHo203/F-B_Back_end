@@ -7,7 +7,7 @@ import {
     loginUser,
     registerUser,
     changePasswordService,
-} from "./authService";
+} from "./auth.service";
 
 const Login = async (req: Request, res: Response) => {
     let { email, password } = req.query;

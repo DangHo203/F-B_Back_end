@@ -14,8 +14,8 @@ const {
 } = require("../Auth/authController");
 
 const router = Router();
-const { isAdmin } = require("../../middlewares/isAdmin");
-const { verifyToken } = require("../../middlewares/verifyToken");
+const { isAdmin } = require("../../middlewares/is-admin");
+const { verifyToken } = require("../../middlewares/verify-token");
 //request
 
 //login/register

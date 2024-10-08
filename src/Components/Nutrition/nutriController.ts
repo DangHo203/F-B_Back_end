@@ -4,7 +4,7 @@ import {
     AddNutritionService,
     GetNutritionService,
     UpdateNutritionService,
-} from "./nutriServices";
+} from "./nutri.service";
 
 const GetNutrition = async (req: Request, res: Response) => {
     const { item_id } = req.query;

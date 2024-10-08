@@ -13,7 +13,7 @@ const {
     UploadImage,
 } = require("../User/userController");
 
-const { verifyToken } = require("../../middlewares/verifyToken");
+const { verifyToken } = require("../../middlewares/verify-token");
 
 router.get("/getSumStaff", verifyToken, GetSumStaff);
 router.get("/getStaffByParams", verifyToken, GetStaffsByParams);

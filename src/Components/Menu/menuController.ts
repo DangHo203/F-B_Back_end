@@ -6,7 +6,7 @@ import {
     UpdateMenuService,
     GetMenuByIdService,
     GetSumMenuByParamsService,
-} from "./menuServices";
+} from "./menu.service";
 
 const AddMenu = async (req: Request, res: Response) => {
     const { title, price, description, image, category } = req.query;
