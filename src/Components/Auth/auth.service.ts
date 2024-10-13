@@ -13,7 +13,7 @@ import { generateToken, generateRefreshToken } from "../../middlewares/jwt";
 export const loginUser = async (
     email: string,
     password: string
-): Promise<{ user: User; token: string; refreshToken: string }> => {
+): Promise<{ user: User; token: string; refreshToken: string, role:string }> => {
     const sql = `SELECT * FROM Users WHERE email = ?`;
 
     return new Promise((resolve, reject) => {
@@ -53,7 +53,7 @@ export const loginUser = async (
                 }
             );
 
-            resolve({ user: data[0], token, refreshToken });
+            resolve({ user: data[0], token, refreshToken, role: data[0].role });
         });
     });
 };
@@ -65,12 +65,13 @@ export const registerUser = async (data: {
     phone: string;
     username: string;
     role: string;
+    permission: string;
 }): Promise<{ message: string; data: any }> => {
-    const { name, email, password, phone, role, username } = data;
+    const { name, email, password, phone, role, username, permission } = data;
     //hash password
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password.toString(), salt);
-
+    
     return new Promise(async (resolve, reject) => {
         const emailQuery = "SELECT * FROM Users WHERE email = ?";
         const emailResult: [] = await new Promise((resolve, reject) => {
@@ -103,12 +104,12 @@ export const registerUser = async (data: {
             });
         }
 
-        let sql = `INSERT INTO Users (fullName, phone, email, username, password, role) 
-Values (?,? ,?, ?, ?, ?)`;
-
+        let sql = `INSERT INTO Users (fullName, phone, email, username, password, role, permissions) 
+Values (?,? ,?, ?, ?, ?,?)`;
+        console.log(permission);
         db.query(
             sql,
-            [name, phone, email, username, passwordHash, role],
+            [name, phone, email, username, passwordHash, role,permission],
             function (err: any, data: any) {
                 if (err) reject(err);
                 resolve({ data: data, message: "Register successfully" });

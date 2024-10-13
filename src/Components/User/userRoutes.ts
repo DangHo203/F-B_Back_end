@@ -5,6 +5,7 @@ const {
     updateStatus,
     GetSumCustomer,
     GetUserById,
+    GetShipper
 } = require("./userController");
 const {
     Login,
@@ -30,5 +31,7 @@ router.get("/getCustomerById", verifyToken, GetUserById);
 
 router.get("/token", createNewAccessToken);
 router.post("/status", verifyToken, updateStatus);
+
+router.get("/shipper", GetShipper);
 
 export default router;

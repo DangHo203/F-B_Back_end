@@ -8,7 +8,8 @@ import {
     GetOrderByParamsAPI,
     GetOrderItemsAPI,
     ChangeStatusAPI,
-    CancelOrderAPI
+    CancelOrderAPI,
+    GetShipperOrderAPI
 }
 from "./orderController";
 
@@ -19,5 +20,7 @@ router.get("/id", GetOrderByCustomerIdAPI)
 router.get("/items", GetOrderItemsAPI)
 router.put("/status", ChangeStatusAPI)
 router.put("/cancel", CancelOrderAPI)
+
+router.get("/shipper", GetShipperOrderAPI)
 
 export default router;

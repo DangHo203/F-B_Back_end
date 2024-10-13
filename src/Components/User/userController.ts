@@ -1,10 +1,31 @@
 import db from "../../config/database.config";
 import { Request, Response } from "express";
+import { GetShipperService } from "./user.service";
 const jwt = require("jsonwebtoken");
 
 interface CustomRequest extends Request {
     file: any;
 }
+
+const GetShipper = async (req: Request, res: Response) => {
+    const { user_id } = req.query;
+    if (!user_id) {
+        return res.status(400).json({ message: "ID is require!" });
+    }
+
+    try {
+        const rs = await GetShipperService({
+            user_id: parseInt(user_id as string),
+        });
+        return res.status(200).json({
+            status: 200,
+            message: "Get info successfully",
+            rs,
+        });
+    } catch (err) {
+        return res.status(500).json({ message: "Server error" });
+    }
+};
 
 const GetUsers = async (req: Request, res: Response) => {
     let sql = "SELECT * FROM Users";
@@ -68,7 +89,8 @@ const UpdateUser = async (req: Request, res: Response) => {
     let gend = req.query?.gender === "true" ? true : false;
 
     // Check if phone number exists
-    const phoneQuery = "SELECT * FROM Users WHERE phoneNumber = ? and _id != ? ";
+    const phoneQuery =
+        "SELECT * FROM Users WHERE phoneNumber = ? and _id != ? ";
     const phoneResult: [] = await new Promise((resolve, reject) => {
         db.query(phoneQuery, [phoneNumber, _id], (err: any, data: any) => {
             if (err) return reject(err);
@@ -246,6 +268,18 @@ const updateStatus = async (req: Request, res: Response) => {
     }
 };
 //////////////////////////////////CUSTOMER/////////////////////////////////////
+const GetAllStaff = async (req: Request, res: Response) => {
+    let sql =
+        "SELECT * FROM Users WHERE role not like 'user' and role not like 'admin'";
+    db.query(sql, function (err: any, data: any) {
+        if (err) throw err;
+        res.status(200).json({
+            message: "Get staff successfully",
+            data: data,
+        });
+    });
+};
+
 const GetCustomersByParams = async (req: Request, res: Response) => {
     const queryObj = { ...req.query };
 
@@ -348,7 +382,11 @@ const AddStaff = async (req: Request, res: Response) => {
     if (!name || !phone || !email || !username || !role) {
         return res.status(400).json({ message: "Missing required fields" });
     }
-    const query = `INSERT INTO Users (fullName, phone, email, username, role) VALUES ("${name}","${phone}","${email}","${username}","${role}")`;
+    console.log(req.query.permission);
+    const permission = req.query.permission
+        ? JSON.stringify(req?.query.permission)
+        : "";
+    const query = `INSERT INTO Users (fullName, phone, email, username, role, permissions) VALUES ("${name}","${phone}","${email}","${username}","${role}", '${permission}')`;
     if (checkValid(email as string, phone as string) === 410) {
         return res.status(410).json({ message: "Email is already exist" });
     } else if (checkValid(email as string, phone as string) === 411) {
@@ -396,6 +434,36 @@ const UpdateStaff = async (req: Request, res: Response) => {
         return res.status(500).json({ message: "Server error" });
     }
 };
+
+const UpdatePermission = async (req: Request, res: Response) => {
+    const { user_id } = req.query;
+    if (!user_id) {
+        return res.status(400).json({ message: "ID is require!" });
+    }
+    
+    console.log(req.query.permission);
+    let permission = req.query.permission
+        ? JSON.stringify(req?.query.permission)
+        : "";
+
+    if (permission === "") {
+        permission = "[]";
+    }
+    let sql = `UPDATE Users SET permissions = '${permission}' WHERE user_id = ${user_id}`;
+
+    try {
+        db.query(sql, function (err: any, data: any) {
+            if (err) throw err;
+            res.status(200).json({
+                message: "Update permission successfully",
+                data: data,
+            });
+        });
+    } catch (err) {
+        return res.status(500).json({ message: "Server error" });
+    }
+};
+
 const DeleteStaff = async (req: Request, res: Response) => {
     const { user_id } = req.query;
     if (!user_id) {
@@ -522,13 +590,13 @@ const UpdateProfile = async (req: Request, res: Response) => {
     } catch (err) {
         return res.status(500).json({ message: "Server error" });
     }
-}
+};
 const UploadImage = async (req: CustomRequest, res: Response) => {
     return res.status(200).json({
         message: "Upload image successfully",
         data: req.file,
     });
-}
+};
 
 export = {
     AddUser,
@@ -550,4 +618,8 @@ export = {
     GetStaffsByParams,
     UpdateProfile,
     UploadImage,
+    UpdatePermission,
+
+    GetShipper,
+    GetAllStaff,
 };

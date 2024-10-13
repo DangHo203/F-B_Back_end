@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 
-import { GetSumOrderService, GetOrderByParamsService, GetOrderByCustomerIdService, GetOrderItemsService, ChangeStatusService, CancelOrderService } from "./order.service";
+import { GetSumOrderService, GetOrderByParamsService, GetOrderByCustomerIdService, GetOrderItemsService, ChangeStatusService, CancelOrderService, GetShipperOrderService } from "./order.service";
+import { convertDay } from "../../utils/Order";
 
 const AddOrderAPI = async (req: Request, res: Response) => {};
 const GetOrderByCustomerIdAPI = async (req: Request, res: Response) => {
@@ -78,17 +79,20 @@ const GetOrderItemsAPI = async (req: Request, res: Response) => {
 }
 
 const ChangeStatusAPI = async (req: Request, res: Response) => {
-    const { order_id, status, delivery_time } = req.query;
+    const { order_id, status, user_id, delivery_time } = req.query;
     if (!order_id || !status) {
         return res.status(400).json({
             message: "Order id and status is required",
         });
     }
+
+    
     try {
         const result = await ChangeStatusService({
             order_id: Number(order_id),
             status: status.toString(),
             delivery_time: delivery_time as string,
+            user_id: Number(user_id),
         });
         return res.status(200).json({
             message: "Status updated successfully",
@@ -124,6 +128,21 @@ const CancelOrderAPI = async (req: Request, res: Response) => {
     }
 }
 
+const GetShipperOrderAPI = async (req: Request, res: Response) => {
+    const { user_id } = req.query;
+    try {
+        const result = await GetShipperOrderService({
+            shipper_id: Number(user_id),
+        });
+        return res.status(200).json({
+            message: "Order fetched successfully",
+            result,
+        });
+    } catch (err) {
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
 
 export {
     AddOrderAPI,
@@ -133,4 +152,5 @@ export {
     GetOrderItemsAPI,
     ChangeStatusAPI,
     CancelOrderAPI,
+    GetShipperOrderAPI
 };

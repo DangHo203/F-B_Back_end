@@ -18,7 +18,7 @@ const Login = async (req: Request, res: Response) => {
     }
 
     try {
-        const { user, token, refreshToken } = await loginUser(
+        const { user, token, refreshToken, role } = await loginUser(
             email as string,
             password as string
         );
@@ -29,6 +29,7 @@ const Login = async (req: Request, res: Response) => {
                 user,
                 token,
                 refreshToken,
+                role: user.role,
             },
         });
     } catch (err: any) {
@@ -40,12 +41,23 @@ const Login = async (req: Request, res: Response) => {
 };
 
 const Register = async (req: Request, res: Response) => {
-    let { email, password, name, phone, username, role } = req.query;
+    let { email, password, name, phone, username, role, permissions } = req.query;
 
     if (!email || !password || !name || !phone || !username || !role) {
         return res.status(403).json({ message: "Missing required fields" });
     }
-
+    
+    if (!permissions) {
+        permissions = ["Manage Profile"];
+    } else if (Array.isArray(permissions)) {
+        if (!(permissions as string[]).includes("Manage Profile")) {
+            (permissions as string[]).push("Manage Profile");
+        }
+    } else {
+        permissions = ["Manage Profile"];
+    }
+    const permissionConvert = JSON.stringify(permissions);
+    console.log(permissionConvert);
     try {
         const data = await registerUser({
             name: name as string,
@@ -54,6 +66,7 @@ const Register = async (req: Request, res: Response) => {
             phone: phone as string,
             username: username as string,
             role: role as string,
+            permission: permissionConvert,
         });
         return res.status(200).json({
             data: data,

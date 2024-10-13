@@ -18,9 +18,9 @@ export const GetSumOrderService = (params: {
             if (status) {
                 query += `AND status LIKE '%${status}%' `;
             }
-            query += `AND (status not LIKE 'Delivered' and status not LIKE 'Cancelled') `;
+            query += `AND (status not LIKE 'Cancelled' and status not LIKE 'Successfully') `;
         } else {
-            query += `AND status LIKE 'Delivered' or status LIKE 'Cancelled' `;
+            query += `AND status LIKE 'Successfully' or status LIKE 'Cancelled' `;
         }
         if (create_at) {
             query += `AND create_at LIKE '%${create_at}%' `;
@@ -56,9 +56,9 @@ export const GetOrderByParamsService = (params: {
             if (status) {
                 query += `AND status LIKE '%${status}%' `;
             }
-            query += `AND (status not LIKE 'Delivered' and status not LIKE 'Cancelled') `;
+            query += `AND ( status not LIKE 'Cancelled' and status not LIKE 'Successfully') `;
         } else {
-            query += `AND status LIKE 'Delivered' or status LIKE 'Cancelled' `;
+            query += `AND status LIKE 'Successfully' or status LIKE 'Cancelled' `;
         }
         if (create_at) {
             query += `AND create_at >= '${time}' `;
@@ -109,14 +109,18 @@ export const ChangeStatusService = (params: {
     order_id: number;
     status: string;
     delivery_time?: string;
+    user_id?: number;
 }) => {
-    const { order_id, status,delivery_time } = params;
+    const { order_id, user_id, status, delivery_time } = params;
     return new Promise((resolve, reject) => {
-        let query = `UPDATE orders SET status = '${status}'`
+        let query = `UPDATE orders SET status = '${status}'`;
         if (delivery_time) {
             query += `, delivery_time = NOW() `;
         }
-        query+= `WHERE order_id = ${order_id}`;
+        if (user_id) {
+            query += `, shipper_id = ${user_id} `;
+        }
+        query += ` WHERE order_id = ${order_id}`;
         console.log(query);
         db.query(query, (err, result) => {
             if (err) {
@@ -140,6 +144,21 @@ export const CancelOrderService = (params: {
                 reject(err);
             }
             resolve(result);
+        });
+    });
+};
+
+export const GetShipperOrderService = (params: {
+    shipper_id: number;
+}): Promise<IOrder[]> => {
+    const { shipper_id } = params;
+    return new Promise((resolve, reject) => {
+        const query = `SELECT * FROM orders WHERE status = 'Delivering' and shipper_id = ${shipper_id}`;
+        db.query(query, (err, result) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(result as IOrder[]);
         });
     });
 };

@@ -39,3 +39,17 @@ const FilterUserService = async (
         });
     });
 };
+
+export const GetShipperService = async (data: { user_id: number }) => {
+    const { user_id } = data;
+    const query = `SELECT * FROM users join shipper on users.user_id = shipper.user_id WHERE users.user_id = ${user_id}`;
+    return new Promise(async (resolve, reject) => {
+        db.query(query, function (err: any, data: any) {
+            if (err) throw err;
+            resolve({
+                message: "Get shipper by user_id successfully",
+                data,
+            });
+        });
+    });
+};
