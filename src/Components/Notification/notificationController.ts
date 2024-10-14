@@ -5,7 +5,6 @@ import { GetNotificationService, AddNotificationService, changeIsReadService } f
 const GetAllNotification = async (req: Request, res: Response) => {
     try {
         const result = await GetNotificationService();
-        console.log(result);
         return res
             .status(200)
             .json({ message: "Notification fetched successfully", data: result });
@@ -16,7 +15,6 @@ const GetAllNotification = async (req: Request, res: Response) => {
 
 const AddNotification = async (req: Request, res: Response) => {
     const { title, content,type, link } = req.query;
-    console.log(title, content, type, link);
     if (!title || !content || !type || !link) {
         return res.status(400).json({ message: "All fields are required" });
     }

@@ -57,7 +57,6 @@ const Register = async (req: Request, res: Response) => {
         permissions = ["Manage Profile"];
     }
     const permissionConvert = JSON.stringify(permissions);
-    console.log(permissionConvert);
     try {
         const data = await registerUser({
             name: name as string,

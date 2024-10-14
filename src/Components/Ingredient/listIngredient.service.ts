@@ -57,7 +57,6 @@ const GetIngredientFromMenuService = (ingredient: { item_id: number }) => {
     const query = `SELECT menuitemingredients.ingredient_id,menuitemingredients.item_id, menuitemingredients.quantity_required, ingredients.name  FROM menuitemingredients join ingredients on menuitemingredients.ingredient_id = ingredients.ingredient_id WHERE menuitemingredients.item_id = ?
 
 `;
-    console.log(query);
     return new Promise((resolve, reject) => {
         db.query(query, ingredient.item_id, (err, result) => {
             if (err) {

@@ -10,7 +10,6 @@ const GetOrderByCustomerIdAPI = async (req: Request, res: Response) => {
         const result = await GetOrderByCustomerIdService({
             order_id: Number(order_id),
         });
-        console.log(result);
         return res.status(200).json({
             message: "Order fetched successfully",
             result,
@@ -22,7 +21,6 @@ const GetOrderByCustomerIdAPI = async (req: Request, res: Response) => {
 
 const GetSumOrderAPI = async (req: Request, res: Response) => {
     const { search, status, create_at, history } = req.query;
-    console.log(search, status, create_at);
     try {
         const result = await GetSumOrderService({
             search: search as string,
@@ -99,7 +97,6 @@ const ChangeStatusAPI = async (req: Request, res: Response) => {
             result,
         });
     } catch (err) {
-        console.log(err);
         return res.status(500).json({ message: "Internal server error" });
     }
 };
@@ -123,7 +120,6 @@ const CancelOrderAPI = async (req: Request, res: Response) => {
             result,
         });
     } catch (err) {
-        console.log(err);
         return res.status(500).json({ message: "Internal server error" });
     }
 }

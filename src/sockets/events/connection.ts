@@ -5,8 +5,6 @@ import { registerOrderEvents } from "./order.events";
 import { registerShipperEvents } from "./shipper.events";
 
 export const initializeConnection = (io: SocketIOServer, socket: Socket) => {
-    console.log("A user connected:", socket.id);
-
     // Register shipper-related events
     registerShipperEvents(io, socket);
 
@@ -14,5 +12,5 @@ export const initializeConnection = (io: SocketIOServer, socket: Socket) => {
     registerOrderEvents(io, socket);
 
     // Handle disconnection
-    handleDisconnection(io, socket);
+    // handleDisconnection(io, socket);
 };

@@ -22,7 +22,6 @@ export const addShift = async (req: Request, res: Response) => {
 
     const newStart = convertDay(start as string);
     const newEnd = convertDay(end as string);
-    console.log("hi",newStart, newEnd);
     try{
         
         const rs =  await addShiftService(

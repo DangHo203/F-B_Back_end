@@ -87,7 +87,6 @@ const GetIngredientByParamsService = (params: {
     }
     query += ` LIMIT ? OFFSET ?`;
     queryParams.push(limit, numberPage);
-    console.log(query);
 
     return new Promise((resolve, reject) => {
         db.query(query, queryParams, (err, result) => {
@@ -109,7 +108,6 @@ const GetSumIngredientByParamsService = (params: {
     // } ${search ? `(ingredient_id = ${search} And name = ${search}) and ` : " "}   ${
     //     is_available ? `is_available = ${is_available} ` : " "
     // } `;
-    console.log(search, is_available);
     let query = `SELECT Count(*) as Sum FROM ingredients`;
     let queryParams = [];
 
@@ -128,7 +126,6 @@ const GetSumIngredientByParamsService = (params: {
         query += ` WHERE ` + conditions.join(" AND ");
     }
     query += ` LIMIT 10000 OFFSET 0`;
-    console.log(query);
     return new Promise((resolve, reject) => {
         db.query(query, queryParams, (err, result) => {
             if (err) {

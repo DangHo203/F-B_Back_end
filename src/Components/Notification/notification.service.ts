@@ -31,7 +31,6 @@ export const AddNotificationService = (params: {
     return new Promise((resolve, reject) => {
         let query = `INSERT INTO notifications SET ?`;
         db.query(query, item, (err, result) => {
-            console.log(query);
             if (err) {
                 reject(err);
             }

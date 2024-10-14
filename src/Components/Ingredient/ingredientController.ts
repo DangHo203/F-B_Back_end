@@ -39,7 +39,6 @@ const GetIngredientByParams = async (req: Request, res: Response) => {
             page: Number(page),
             limit: Number(limit),
         });
-        console.log(result);
         return res
             .status(200)
             .json({ message: "Ingredients fetched successfully", result });
@@ -49,7 +48,6 @@ const GetIngredientByParams = async (req: Request, res: Response) => {
 };
 const GetSumIngredientByParams = async (req: Request, res: Response) => {
     const { search, is_available } = req.query;
-    console.log(search, is_available);
     try {
         const result = await GetSumIngredientByParamsService({
             search: search as string,
@@ -79,7 +77,6 @@ const GetIngredientById = async (req: Request, res: Response) => {
 
 const AddIngredient = async (req: Request, res: Response) => {
     const { name, stock, is_available, unit } = req.query;
-    console.log(name, stock, is_available, unit);
     if (!name || !stock || !is_available) {
         return res.status(400).json({ message: "All fields are required" });
     }
@@ -109,7 +106,6 @@ const DeleteIngredient = async (req: Request, res: Response) => {
             .status(200)
             .json({ message: "Ingredient deleted successfully", result });
     } catch (err) {
-        console.log(err);
         return res.status(500).json({ message: "Internal server error" });
     }
 };
@@ -131,7 +127,6 @@ const UpdateIngredient = async (req: Request, res: Response) => {
             .status(200)
             .json({ message: "Ingredient updated successfully", result });
     } catch (err) {
-        console.log(err);
         return res.status(500).json({ message: "Internal server error" });
     }
 }
@@ -154,7 +149,6 @@ const AddIngredientToMenu = async (req: Request, res: Response) => {
             .status(201)
             .json({ message: "Ingredient added to menu successfully", result });
     } catch (err: any) {
-        console.log(err);
         if (err.code === "ER_DUP_ENTRY") {
             return res.status(400).json({code: 'ER_DUP_ENTRY', message: "Ingredient already exists" });
         }

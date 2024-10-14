@@ -106,7 +106,6 @@ export const registerUser = async (data: {
 
         let sql = `INSERT INTO Users (fullName, phone, email, username, password, role, permissions) 
 Values (?,? ,?, ?, ?, ?,?)`;
-        console.log(permission);
         db.query(
             sql,
             [name, phone, email, username, passwordHash, role,permission],

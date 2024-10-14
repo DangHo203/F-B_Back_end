@@ -24,7 +24,6 @@ export default class ShipperStatusManager {
 
     private initializeSocketEvents() {
         this.io.on("connection", (socket: Socket) => {
-            console.log("A user connected:", socket.id);
             initializeConnection(this.io,socket);
         });
     }

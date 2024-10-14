@@ -26,7 +26,6 @@ export const GetSumOrderService = (params: {
             query += `AND create_at LIKE '%${create_at}%' `;
         }
         query += ` Limit 100000 OFFSET 0`;
-        console.log(query);
         db.query(query, (err, result) => {
             if (err) {
                 reject(err);
@@ -65,7 +64,6 @@ export const GetOrderByParamsService = (params: {
         }
 
         query += ` Limit ${limit} Offset ${limit * (page - 1)}`;
-        console.log(query);
         db.query(query, (err, result) => {
             if (err) {
                 reject(err);
@@ -121,7 +119,6 @@ export const ChangeStatusService = (params: {
             query += `, shipper_id = ${user_id} `;
         }
         query += ` WHERE order_id = ${order_id}`;
-        console.log(query);
         db.query(query, (err, result) => {
             if (err) {
                 reject(err);

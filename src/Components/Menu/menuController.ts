@@ -10,7 +10,6 @@ import {
 
 const AddMenu = async (req: Request, res: Response) => {
     const { title, price, description, image, category } = req.query;
-    console.log(req.query);
     if (!title || !price || !description || !image || !category) {
         return res.status(400).json({ message: "All fields are required" });
     }

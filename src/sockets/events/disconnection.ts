@@ -7,7 +7,6 @@ export const handleDisconnection = (io: SocketIOServer, socket: Socket) => {
     socket.on("disconnectCustom", (id: number) => {
         console.log(`Shipper ${id} disconnected`);
         shipperService.removeShipper(id);
-
         io.emit("listShipper", { list: shipperService.getListShipper() });
     });
 };

@@ -190,7 +190,6 @@ const GetSumUser = async (req: Request, res: Response) => {
             }
         })
         .join(" AND ")} LIMIT 100000 OFFSET 0`;
-    console.log(query);
     try {
         db.query(query, function (err: any, data: any) {
             if (err) throw err;
@@ -232,7 +231,6 @@ const GetUsersByParams = async (req: Request, res: Response) => {
             }
         })
         .join(" and ")} LIMIT 10 OFFSET ${skip}`;
-    console.log(query);
     try {
         db.query(query, function (err: any, data: any) {
             if (err) throw err;
@@ -308,7 +306,6 @@ const GetCustomersByParams = async (req: Request, res: Response) => {
             ? "WHERE role like 'user'"
             : "and role like 'user'"
     }  LIMIT 5 OFFSET ${skip}`;
-    console.log(query);
     try {
         db.query(query, function (err: any, data: any) {
             if (err) throw err;
@@ -344,7 +341,6 @@ const GetSumCustomer = async (req: Request, res: Response) => {
             ? "WHERE role like 'user'"
             : "and role like 'user'"
     } LIMIT 100000 OFFSET 0`;
-    console.log(query);
     try {
         db.query(query, function (err: any, data: any) {
             if (err) throw err;
@@ -382,7 +378,6 @@ const AddStaff = async (req: Request, res: Response) => {
     if (!name || !phone || !email || !username || !role) {
         return res.status(400).json({ message: "Missing required fields" });
     }
-    console.log(req.query.permission);
     const permission = req.query.permission
         ? JSON.stringify(req?.query.permission)
         : "";

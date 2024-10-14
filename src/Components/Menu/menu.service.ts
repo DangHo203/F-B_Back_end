@@ -92,7 +92,6 @@ const GetMenuByParamsService = (params: {
     }
     query += ` LIMIT ? OFFSET ?`;
     queryParams.push(limit, numberPage);
-    console.log(query);
 
     return new Promise((resolve, reject) => {
         db.query(query, queryParams, (err, result) => {
@@ -138,7 +137,6 @@ const GetSumMenuByParamsService = (params: {
     }
     query += ` LIMIT 10000 OFFSET 0`;
 
-    console.log(query);
     return new Promise((resolve, reject) => {
         db.query(query, queryParams, (err, result) => {
             if (err) {
