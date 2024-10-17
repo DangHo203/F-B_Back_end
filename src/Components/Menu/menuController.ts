@@ -6,6 +6,7 @@ import {
     UpdateMenuService,
     GetMenuByIdService,
     GetSumMenuByParamsService,
+    GetSpecialMenuService,
 } from "./menu.service";
 
 const AddMenu = async (req: Request, res: Response) => {
@@ -117,6 +118,17 @@ const GetMenuById = async (req: Request, res: Response) => {
     }
 };
 
+const GetSpecialMenu = async (req: Request, res: Response) => {
+    try {
+        const result = await GetSpecialMenuService();
+        return res
+            .status(200)
+            .json({ message: "Special Menu fetched successfully", data: result });
+    } catch (err: any) {
+        return res.status(500).json({ message: err.message });
+    }
+}
+
 export {
     AddMenu,
     UpdateMenu,
@@ -124,4 +136,5 @@ export {
     GetMenuByParams,
     GetMenuById,
     GetSumMenuByParams,
+    GetSpecialMenu
 };

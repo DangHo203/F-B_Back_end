@@ -161,6 +161,21 @@ const GetMenuByIdService = (id: number) => {
     });
 };
 
+
+
+const GetSpecialMenuService = () => {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT * FROM menuitems WHERE category="Special"`;
+        db.query(query, (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(result);
+            }
+        });
+    });
+}
+
 export {
     AddMenuService,
     UpdateMenuService,
@@ -168,4 +183,5 @@ export {
     GetMenuByParamsService,
     GetSumMenuByParamsService,
     GetMenuByIdService,
+    GetSpecialMenuService
 };

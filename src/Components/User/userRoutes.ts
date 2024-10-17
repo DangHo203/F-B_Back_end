@@ -27,7 +27,7 @@ router.post("/register", Register);
 router.get("/getSumCustomer", verifyToken, GetSumCustomer);
 router.get("/getCustomerByParams", verifyToken, GetCustomersByParams);
 router.put("/changePassword", changePassword);
-router.get("/getCustomerById", verifyToken, GetUserById);
+router.get("/getCustomerById", GetUserById);
 
 router.get("/token", createNewAccessToken);
 router.post("/status", verifyToken, updateStatus);
