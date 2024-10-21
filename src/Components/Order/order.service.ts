@@ -2,6 +2,50 @@ import db from "../../config/database.config";
 import { convertDay } from "../../utils/Order";
 import { IOrder, IOrderItem } from "./order.interface";
 
+export const CreateOrderService = (params: {
+    user_id: number;
+    total_price: number;
+    message: string;
+    payment_method: string;
+    address: string;
+}) => {
+    const data = {
+        user_id: params.user_id,
+        total_price: params.total_price,
+        message: params.message,
+        address:  params.address,
+        payment_method: params.payment_method,
+        create_at: new Date(),
+        status: "Pending",
+    };
+    return new Promise((resolve, reject) => {
+        const query = `INSERT INTO orders SET ?`;
+        db.query(query, data, (err, result) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(result);
+        });
+    });
+};
+
+export const AddOrderItemService = (params: {
+    order_id: number;
+    item_id: number;
+    quantity: number;
+}) => {
+    const { order_id, item_id, quantity } = params;
+    return new Promise((resolve, reject) => {
+        const query = `INSERT INTO orderitems SET ?`;
+        db.query(query, { order_id, item_id, quantity }, (err, result) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(result);
+        });
+    });
+};
+
 export const GetSumOrderService = (params: {
     search: string;
     status: string;
