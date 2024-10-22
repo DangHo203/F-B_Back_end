@@ -10,11 +10,12 @@ import {
     GetShipperOrderService,
     CreateOrderService,
     AddOrderItemService,
+    GetOrderByIdService,
 } from "./order.service";
 import { convertDay } from "../../utils/Order";
 
 const CreateOrderAPI = async (req: Request, res: Response) => {
-    const { user_id, total_price, message, payment_method, address } =
+    const { user_id, total_price, message, payment_method, address, lng, lat } =
         req.query;
     if (!user_id || !total_price) {
         return res.status(400).json({
@@ -28,6 +29,8 @@ const CreateOrderAPI = async (req: Request, res: Response) => {
             total_price: Number(total_price),
             message: message as string,
             payment_method: payment_method as string,
+            lng: Number(lng),
+            lat: Number(lat),
         });
         return res.status(201).json({
             message: "Order created successfully",
@@ -60,9 +63,24 @@ const AddOrderItemsAPI = async (req: Request, res: Response) => {
     }
 };
 const GetOrderByCustomerIdAPI = async (req: Request, res: Response) => {
-    const { order_id } = req.query;
+    const { user_id } = req.query;
     try {
         const result = await GetOrderByCustomerIdService({
+            user_id: Number(user_id),
+        });
+        return res.status(200).json({
+            message: "Order fetched successfully",
+            result,
+        });
+    } catch (err) {
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+const GetOrderByIdAPI = async (req: Request, res: Response) => {
+    const { order_id } = req.query;
+    try {
+        const result = await GetOrderByIdService({
             order_id: Number(order_id),
         });
         return res.status(200).json({
@@ -203,4 +221,5 @@ export {
     CancelOrderAPI,
     GetShipperOrderAPI,
     AddOrderItemsAPI,
+    GetOrderByIdAPI,
 };

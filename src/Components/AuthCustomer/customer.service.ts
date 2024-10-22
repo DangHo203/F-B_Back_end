@@ -104,7 +104,7 @@ const checkEmailExist = async (email: string): Promise<boolean> => {
 export const register = async (
     name: string,
     email: string,
-    password: string
+    password: string,
 ): Promise<RegisterResponse> => {
     const salt = bcrypt.genSaltSync(10);
     const hashPassword = bcrypt.hashSync(password, salt);
@@ -115,7 +115,7 @@ export const register = async (
     }
     console.log(hashPassword);
     const sql =
-        "INSERT INTO Users (username,fullName, email, password, status) VALUES (?,?, ?, ?, ?)";
+        "INSERT INTO Users (username,fullName, email, password, status, create_at) VALUES (?,?, ?, ?, ?,NOW())";
     return new Promise((resolve, reject) => {
         db.query(sql, ["customer",name, email, hashPassword,"active"], (err, result) => {
             console.log(err?.message);

@@ -65,7 +65,7 @@ const verifyOtpController = (req: Request, res: Response) => {
 // Controller cho việc đăng ký
 const registerController = async (req: Request, res: Response) => {
     const { name, email, password } = req.query;
-
+    const create_at = new Date();
     if (!name || !email || !password) {
         return res
             .status(400)

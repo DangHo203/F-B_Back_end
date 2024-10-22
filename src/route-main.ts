@@ -7,6 +7,7 @@ import orderRouter from "./components/Order/orderRoutes";
 import notificationRouter from "./components/Notification/notificationRoutes";
 import shiftRouter from "./components/Shift/shiftRoutes";
 import customerRouter from "./components/AuthCustomer/customerRoutes";
+import dashboardRouter from "./components/Dashboard/dashboardRoutes";
 const initRoutes = (app: any) => {
     app.use("/api/user", userRouter);
     app.use("/api/staff", staffRouter);
@@ -17,6 +18,7 @@ const initRoutes = (app: any) => {
     app.use("/api/notification", notificationRouter);
     app.use("/api/shift", shiftRouter);
     app.use("/api/customer", customerRouter);
+    app.use("/api/chart", dashboardRouter);
 };
 
 module.exports = initRoutes;

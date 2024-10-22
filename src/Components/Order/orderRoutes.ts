@@ -11,11 +11,13 @@ import {
     CancelOrderAPI,
     GetShipperOrderAPI,
     AddOrderItemsAPI,
+    GetOrderByIdAPI
 } from "./orderController";
 
 router.get("/sum", GetSumOrderAPI);
 router.get("/", GetOrderByParamsAPI);
 router.get("/id", GetOrderByCustomerIdAPI);
+router.get("/id_order", GetOrderByIdAPI);
 router.get("/items", GetOrderItemsAPI);
 router.put("/status", ChangeStatusAPI);
 router.put("/cancel", CancelOrderAPI);

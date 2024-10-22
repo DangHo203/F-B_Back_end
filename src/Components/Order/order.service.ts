@@ -8,15 +8,19 @@ export const CreateOrderService = (params: {
     message: string;
     payment_method: string;
     address: string;
+    lng?: number;
+    lat?: number;
 }) => {
     const data = {
         user_id: params.user_id,
         total_price: params.total_price,
         message: params.message,
-        address:  params.address,
+        address: params.address,
         payment_method: params.payment_method,
         create_at: new Date(),
         status: "Pending",
+        lng: params.lng,
+        lat: params.lat,
     };
     return new Promise((resolve, reject) => {
         const query = `INSERT INTO orders SET ?`;
@@ -118,6 +122,21 @@ export const GetOrderByParamsService = (params: {
 };
 
 export const GetOrderByCustomerIdService = (params: {
+    user_id: number;
+}): Promise<IOrder[]> => {
+    const { user_id } = params;
+    return new Promise((resolve, reject) => {
+        const query = `SELECT * FROM orders WHERE user_id = ${user_id} ORDER BY create_at DESC`;
+        db.query(query, (err, result) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(result as IOrder[]);
+        });
+    });
+};
+
+export const GetOrderByIdService = (params: {
     order_id: number;
 }): Promise<IOrder[]> => {
     const { order_id } = params;
