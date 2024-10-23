@@ -8,6 +8,7 @@ import notificationRouter from "./components/Notification/notificationRoutes";
 import shiftRouter from "./components/Shift/shiftRoutes";
 import customerRouter from "./components/AuthCustomer/customerRoutes";
 import dashboardRouter from "./components/Dashboard/dashboardRoutes";
+import vnpayRouter from "./components/Payment/vnpayRoutes";
 const initRoutes = (app: any) => {
     app.use("/api/user", userRouter);
     app.use("/api/staff", staffRouter);
@@ -19,6 +20,7 @@ const initRoutes = (app: any) => {
     app.use("/api/shift", shiftRouter);
     app.use("/api/customer", customerRouter);
     app.use("/api/chart", dashboardRouter);
+    app.use("/api/vnpay", vnpayRouter);
 };
 
 module.exports = initRoutes;
